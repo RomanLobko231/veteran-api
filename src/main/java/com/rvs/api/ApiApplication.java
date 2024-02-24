@@ -20,7 +20,7 @@ public class ApiApplication {
 
 
 	@Bean
-	CommandLineRunner run(NewsArticleRepository repository){
+	public CommandLineRunner run(NewsArticleRepository repository){
 		return args -> {
 			NewsArticle article1 = new NewsArticle(null, "Посттравматичний стресовий розлад в умовах війни (ПТСР)", """
 					Психологічний стан та психічне здоров’я під час військових дій є вкрай важливим. Багато людей переживають виснаження, спустошення, втому, відчувають тривогу й паніку. Психологи сформулювали корисні поради, як опанувати себе в критичних умовах, як допомогти близьким та підтримувати здоровий психічний стан в критичних умовах.\s
