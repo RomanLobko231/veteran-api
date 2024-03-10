@@ -7,6 +7,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ public class ApiApplication {
 
 
 	@Bean
+	@Profile("dev")
 	public CommandLineRunner run(NewsArticleRepository repository){
 		return args -> {
 			NewsArticle article1 = new NewsArticle(null, "Посттравматичний стресовий розлад в умовах війни (ПТСР)", """

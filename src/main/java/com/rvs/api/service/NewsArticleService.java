@@ -1,5 +1,6 @@
 package com.rvs.api.service;
 
+import com.rvs.api.model.DTOs.NewsArticleDTO;
 import com.rvs.api.model.NewsArticle;
 import com.rvs.api.repository.NewsArticleRepository;
 import org.springframework.stereotype.Service;
@@ -28,9 +29,16 @@ public class NewsArticleService {
                 .orElseThrow(() -> new NoSuchElementException("Article with id %s was not found".formatted(id)));
     }
 
-    public NewsArticle saveArticle(NewsArticle article){
-        return newsRepository.save(article);
+    public List<NewsArticle> getLastThree() {
+        return newsRepository.findTop3ByOrderByDateDesc();
     }
 
+    public NewsArticle saveArticle(NewsArticleDTO articleDTO){
+        return newsRepository.save(articleDTO.mapToArticle());
+    }
 
+    public void deleteById(UUID id){
+        if (!newsRepository.existsById(id)) throw new NoSuchElementException("Article with id %s was not found".formatted(id));
+        newsRepository.deleteById(id);
+    }
 }

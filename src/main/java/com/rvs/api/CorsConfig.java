@@ -10,19 +10,21 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.filter.CorsFilter;
 
+import java.util.List;
+
 @Configuration
 public class CorsConfig {
 
-    @Value("${cors.origin}")
-    private String allowedOrigin;
+    @Value("${cors.origins}")
+    private String[] allowedOrigins;
 
     @Bean
     public CorsFilter corsFilter(){
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
 
-        config.addAllowedOrigin(allowedOrigin);
-        config.addAllowedMethod(HttpMethod.GET);
+        config.setAllowedOrigins(List.of(allowedOrigins));
+        config.addAllowedMethod("*");
         config.addAllowedHeader("*");
 
         source.registerCorsConfiguration("/**", config);
