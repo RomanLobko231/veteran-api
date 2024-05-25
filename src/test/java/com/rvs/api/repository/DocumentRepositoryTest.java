@@ -1,6 +1,8 @@
 package com.rvs.api.repository;
 
+import com.rvs.api.model.DTOs.DocumentDisplayDTO;
 import com.rvs.api.model.Document;
+import com.rvs.api.service.DocumentsService;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.PersistenceUtil;
 import org.junit.jupiter.api.Test;
@@ -10,7 +12,10 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -32,10 +37,11 @@ public class DocumentRepositoryTest {
 
         UUID documentId = documentRepository.save(newDocument).getId();
         Optional<Document> optionalDocument = documentRepository.findById(documentId);
-        assertTrue(optionalDocument.isPresent());
+
+        Document document = optionalDocument.get();
+        System.out.println(Arrays.toString(document.getFileData()));
 
         PersistenceUtil jpaUtil = Persistence.getPersistenceUtil();
-        Document document = optionalDocument.get();
         assertFalse(jpaUtil.isLoaded(document, "fileData"));
 
         byte[] fileData = document.getFileData();

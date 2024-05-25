@@ -4,9 +4,17 @@ import com.rvs.api.model.DTOs.DocumentDisplayDTO;
 import com.rvs.api.model.DTOs.DocumentDownloadDTO;
 import com.rvs.api.model.Document;
 import com.rvs.api.repository.DocumentsRepository;
+import org.docx4j.Docx4J;
+import org.docx4j.convert.out.pdf.PdfConversion;
+import org.docx4j.convert.out.pdf.viaXSLFO.Conversion;
+import org.docx4j.openpackaging.exceptions.Docx4JException;
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -23,7 +31,7 @@ public class DocumentsService {
 
     public List<DocumentDisplayDTO> getAll(){
         return documentsRepository
-                .findAll()
+                .findDocumentsWithoutFileData()
                 .stream()
                 .map(DocumentDisplayDTO::mapToDTO)
                 .collect(Collectors.toList());
@@ -31,9 +39,29 @@ public class DocumentsService {
 
     @Transactional(readOnly = true)
     public Document getDocumentById(UUID id){
-        return documentsRepository
+        Document document  = documentsRepository
                 .findFullDocumentById(id)
                 .orElseThrow(() -> new NoSuchElementException("A document with id %s was not found".formatted(id)));
+        byte[] pdfBytes = convertDocToPdf(document.getFileData());
+        document.setFileData(pdfBytes);
+        document.setMimeType("application/pdf");
+        return document;
+    }
+
+    private byte[] convertDocToPdf(byte[] docxBytes) {
+        try {
+            InputStream inputStream = new ByteArrayInputStream(docxBytes);
+            WordprocessingMLPackage wordMLPackage = Docx4J.load(inputStream);
+
+//            PdfConversion conversion = new Conversion(wordMLPackage);
+//            conversion.output(pdfOutputStream, null);
+
+            ByteArrayOutputStream pdfOutputStream = new ByteArrayOutputStream();
+            Docx4J.toPDF(wordMLPackage, pdfOutputStream);
+            return pdfOutputStream.toByteArray();
+        } catch (Docx4JException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public Document save(Document document){
@@ -46,7 +74,6 @@ public class DocumentsService {
     }
 
     @Transactional(readOnly = true)
-
     public DocumentDownloadDTO getDocumentForDownloadById(UUID id) {
         if (!documentsRepository.existsById(id)) throw new NoSuchElementException("A document with id %s was not found".formatted(id));
         return documentsRepository
