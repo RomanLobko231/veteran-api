@@ -24,7 +24,6 @@ public class Document {
 
     @JsonProperty(value = "file")
     @Column(name = "file_data", columnDefinition = "bytea")
-    @Basic(fetch = FetchType.LAZY)
     private byte[] fileData;
 
     @Column(name = "title")
@@ -60,7 +59,6 @@ public class Document {
         this.mimeType = mimeType;
     }
 
-    @JsonIgnore
     public byte[] getFileData() {
         return fileData;
     }
