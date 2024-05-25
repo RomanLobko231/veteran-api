@@ -78,7 +78,7 @@ public class DocumentsService {
             Mapper fontMapper = new BestMatchingMapper();
             wordMLPackage.setFontMapper(fontMapper);
 
-            URL url = this.getClass().getResource("fonts/timesnrcyrmt.ttf");
+            URL url = DocumentsService.class.getResource("src/main/resources/fonts/timesnrcyrmt.ttf");
             PhysicalFonts.addPhysicalFonts("TimesCyr", url.toURI());
             PhysicalFont font = PhysicalFonts.get("TimesCyr");
 
