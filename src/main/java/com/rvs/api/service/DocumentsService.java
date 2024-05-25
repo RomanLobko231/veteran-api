@@ -32,7 +32,7 @@ public class DocumentsService {
     @Transactional(readOnly = true)
     public Document getDocumentById(UUID id){
         return documentsRepository
-                .findById(id)
+                .findFullDocumentById(id)
                 .orElseThrow(() -> new NoSuchElementException("A document with id %s was not found".formatted(id)));
     }
 
