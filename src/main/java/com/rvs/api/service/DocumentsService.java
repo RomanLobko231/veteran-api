@@ -83,7 +83,6 @@ public class DocumentsService {
                     PhysicalFonts.addPhysicalFonts(fontFile.getName(), fontFile.toURI());
                 }
             }
-
             PhysicalFont font = PhysicalFonts.get("timesnrcyrmt");
             fontMapper.put("Times New Roman", font);
             wordMLPackage.setFontMapper(fontMapper);
@@ -96,13 +95,4 @@ public class DocumentsService {
         }
     }
 
-    private static void loadCustomFonts() {
-        try {
-
-            // Set the font mapper
-            wordMLPackage.setFontMapper(fontMapper);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }
