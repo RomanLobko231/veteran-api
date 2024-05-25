@@ -8,6 +8,7 @@ import org.docx4j.Docx4J;
 import org.docx4j.convert.out.pdf.PdfConversion;
 import org.docx4j.convert.out.pdf.viaXSLFO.Conversion;
 import org.docx4j.fonts.*;
+import org.docx4j.fonts.fop.fonts.Font;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.Fonts;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -73,18 +75,15 @@ public class DocumentsService {
         try {
             InputStream inputStream = new ByteArrayInputStream(docxBytes);
             WordprocessingMLPackage wordMLPackage = Docx4J.load(inputStream);
+            Mapper fontMapper = new BestMatchingMapper();
+            wordMLPackage.setFontMapper(fontMapper);
 
-            String fontDirPath = "resources/fonts";
-            Mapper fontMapper = new IdentityPlusMapper();
+            URL url = this.getClass().getResource("fonts/timesnrcyrmt.ttf");
+            PhysicalFonts.addPhysicalFonts("TimesCyr", url.toURI());
+            PhysicalFont font = PhysicalFonts.get("TimesCyr");
 
-            File fontDir = new File(fontDirPath);
-            if (fontDir.isDirectory()) {
-                for (File fontFile : fontDir.listFiles()) {
-                    PhysicalFonts.addPhysicalFonts(fontFile.getName(), fontFile.toURI());
-                }
-            }
-            PhysicalFont font = PhysicalFonts.get("timesnrcyrmt");
             fontMapper.put("Times New Roman", font);
+            fontMapper.put("Calibri", font);
             wordMLPackage.setFontMapper(fontMapper);
 
             ByteArrayOutputStream pdfOutputStream = new ByteArrayOutputStream();
