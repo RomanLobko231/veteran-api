@@ -4,6 +4,7 @@ import com.rvs.api.model.DTOs.NewsArticleDTO;
 import com.rvs.api.model.NewsArticle;
 import com.rvs.api.repository.NewsArticleRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -19,16 +20,19 @@ public class NewsArticleService {
     }
 
 
+    @Transactional(readOnly = true)
     public List<NewsArticle> getAll(){
         return newsRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public NewsArticle getById(UUID id){
         return newsRepository
                 .findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Article with id %s was not found".formatted(id)));
     }
 
+    @Transactional(readOnly = true)
     public List<NewsArticle> getLastThree() {
         return newsRepository.findTop3ByOrderByDateDesc();
     }

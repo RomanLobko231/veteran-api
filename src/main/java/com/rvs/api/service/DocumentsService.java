@@ -29,10 +29,10 @@ public class DocumentsService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Document getDocumentById(UUID id){
         return documentsRepository
-                .findById(id)
+                .findFullDocumentById(id)
                 .orElseThrow(() -> new NoSuchElementException("A document with id %s was not found".formatted(id)));
     }
 
@@ -44,6 +44,8 @@ public class DocumentsService {
        if (!documentsRepository.existsById(id)) throw new NoSuchElementException("A document with id %s was not found".formatted(id));
        documentsRepository.deleteById(id);
     }
+
+    @Transactional(readOnly = true)
 
     public DocumentDownloadDTO getDocumentForDownloadById(UUID id) {
         if (!documentsRepository.existsById(id)) throw new NoSuchElementException("A document with id %s was not found".formatted(id));

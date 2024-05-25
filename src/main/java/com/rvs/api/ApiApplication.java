@@ -21,7 +21,7 @@ public class ApiApplication {
 
 
 	@Bean
-	@Profile({"prod"})
+	@Profile({"test"})
 	public CommandLineRunner run(NewsArticleRepository repository){
 		return args -> {
 			NewsArticle article1 = new NewsArticle(null, "Посттравматичний стресовий розлад в умовах війни (ПТСР)", """
