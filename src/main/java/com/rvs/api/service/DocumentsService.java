@@ -7,20 +7,14 @@ import com.rvs.api.repository.DocumentsRepository;
 import org.docx4j.Docx4J;
 import org.docx4j.convert.out.pdf.PdfConversion;
 import org.docx4j.convert.out.pdf.viaXSLFO.Conversion;
-import org.docx4j.fonts.Mapper;
-import org.docx4j.fonts.PhysicalFont;
-import org.docx4j.fonts.PhysicalFonts;
+import org.docx4j.fonts.*;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.fonts.BestMatchingMapper;
 import org.docx4j.wml.Fonts;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -35,7 +29,7 @@ public class DocumentsService {
         this.documentsRepository = documentsRepository;
     }
 
-    public List<DocumentDisplayDTO> getAll(){
+    public List<DocumentDisplayDTO> getAll() {
         return documentsRepository
                 .findDocumentsWithoutFileData()
                 .stream()
@@ -44,8 +38,8 @@ public class DocumentsService {
     }
 
     @Transactional(readOnly = true)
-    public Document getDocumentById(UUID id){
-        Document document  = documentsRepository
+    public Document getDocumentById(UUID id) {
+        Document document = documentsRepository
                 .findFullDocumentById(id)
                 .orElseThrow(() -> new NoSuchElementException("A document with id %s was not found".formatted(id)));
         byte[] pdfBytes = convertDocToPdf(document.getFileData());
@@ -55,18 +49,20 @@ public class DocumentsService {
     }
 
 
-    public Document save(Document document){
+    public Document save(Document document) {
         return documentsRepository.save(document);
     }
 
-    public void deleteById(UUID id){
-       if (!documentsRepository.existsById(id)) throw new NoSuchElementException("A document with id %s was not found".formatted(id));
-       documentsRepository.deleteById(id);
+    public void deleteById(UUID id) {
+        if (!documentsRepository.existsById(id))
+            throw new NoSuchElementException("A document with id %s was not found".formatted(id));
+        documentsRepository.deleteById(id);
     }
 
     @Transactional(readOnly = true)
     public DocumentDownloadDTO getDocumentForDownloadById(UUID id) {
-        if (!documentsRepository.existsById(id)) throw new NoSuchElementException("A document with id %s was not found".formatted(id));
+        if (!documentsRepository.existsById(id))
+            throw new NoSuchElementException("A document with id %s was not found".formatted(id));
         return documentsRepository
                 .findById(id)
                 .map(DocumentDownloadDTO::mapToDTO)
@@ -78,15 +74,18 @@ public class DocumentsService {
             InputStream inputStream = new ByteArrayInputStream(docxBytes);
             WordprocessingMLPackage wordMLPackage = Docx4J.load(inputStream);
 
-            URI fontUri = Objects.requireNonNull(DocumentsService.class.getResource("/fonts/e-ukraine-regular_w.ttf")).toURI();
-            PhysicalFonts.addPhysicalFonts("e-ukraine-regular_w", fontUri);
+            String fontDirPath = "resources/fonts";
+            Mapper fontMapper = new IdentityPlusMapper();
 
-            BestMatchingMapper fontMapper = new BestMatchingMapper();
-            PhysicalFonts.discoverPhysicalFonts();
-            for (PhysicalFont font : PhysicalFonts.getPhysicalFont("e-ukraine-regular_w", fontUri)) {
-                fontMapper.put(font.getName(), font);
+            File fontDir = new File(fontDirPath);
+            if (fontDir.isDirectory()) {
+                for (File fontFile : fontDir.listFiles()) {
+                    PhysicalFonts.addPhysicalFonts(fontFile.getName(), fontFile.toURI());
+                }
             }
 
+            PhysicalFont font = PhysicalFonts.get("timesnrcyrmt");
+            fontMapper.put("Times New Roman", font);
             wordMLPackage.setFontMapper(fontMapper);
 
             ByteArrayOutputStream pdfOutputStream = new ByteArrayOutputStream();
@@ -94,6 +93,16 @@ public class DocumentsService {
             return pdfOutputStream.toByteArray();
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private static void loadCustomFonts() {
+        try {
+
+            // Set the font mapper
+            wordMLPackage.setFontMapper(fontMapper);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
