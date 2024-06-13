@@ -42,17 +42,17 @@ public class DocumentsController {
     }
 
     @GetMapping("/display")
-    ResponseEntity<List<DocumentDisplayDTO>> getAll(){
+    ResponseEntity<List<DocumentDisplayDTO>> getAll() {
         return ResponseEntity.ok(documentsService.getAll());
     }
 
     @GetMapping("/{id}/download")
-    ResponseEntity<DocumentDownloadDTO> downloadDocumentById(@PathVariable UUID id){
+    ResponseEntity<DocumentDownloadDTO> downloadDocumentById(@PathVariable UUID id) {
         return ResponseEntity.ok(documentsService.getDocumentForDownloadById(id));
     }
 
     @GetMapping("/download/{id}")
-    ResponseEntity<byte[]> downloadDocument(@PathVariable UUID id){
+    ResponseEntity<byte[]> downloadDocument(@PathVariable UUID id) {
         DocumentDownloadDTO document = documentsService.getDocumentForDownloadById(id);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition
@@ -65,12 +65,12 @@ public class DocumentsController {
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<Document> getDocumentById(@PathVariable UUID id){
+    ResponseEntity<Document> getDocumentById(@PathVariable UUID id) {
         return ResponseEntity.ok(documentsService.getDocumentById(id));
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<Void> deleteById(@PathVariable UUID id){
+    ResponseEntity<Void> deleteById(@PathVariable UUID id) {
         documentsService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
