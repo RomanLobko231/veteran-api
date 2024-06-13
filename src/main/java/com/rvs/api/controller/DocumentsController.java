@@ -57,7 +57,7 @@ public class DocumentsController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition
                         .attachment()
-                        .filename(document.getTitle(), StandardCharsets.UTF_8)
+                        .filename(document.getTitle() + ".docx", StandardCharsets.UTF_8)
                         .build()
                         .toString())
                 .header(HttpHeaders.CONTENT_TYPE, document.getMimeType())
