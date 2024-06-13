@@ -55,11 +55,7 @@ public class DocumentsController {
     ResponseEntity<byte[]> downloadDocument(@PathVariable UUID id){
         DocumentDownloadDTO document = documentsService.getDocumentForDownloadById(id);
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition
-                        .attachment()
-                        .filename(document.getTitle() + ".docx", StandardCharsets.UTF_8)
-                        .build()
-                        .toString())
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=doc.docx")
                 .header(HttpHeaders.CONTENT_TYPE, document.getMimeType())
                 .body(document.getFileData());
     }
