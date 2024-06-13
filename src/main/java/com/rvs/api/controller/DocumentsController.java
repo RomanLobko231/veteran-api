@@ -50,6 +50,15 @@ public class DocumentsController {
         return ResponseEntity.ok(documentsService.getDocumentForDownloadById(id));
     }
 
+    @GetMapping("/download/{id}")
+    ResponseEntity<byte[]> downloadDocument(@PathVariable UUID id){
+        DocumentDownloadDTO document = documentsService.getDocumentForDownloadById(id);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + document.getTitle() + "\"")
+                .header(HttpHeaders.CONTENT_TYPE, document.getMimeType())
+                .body(document.getFileData());
+    }
+
     @GetMapping("/{id}")
     ResponseEntity<Document> getDocumentById(@PathVariable UUID id){
         return ResponseEntity.ok(documentsService.getDocumentById(id));
