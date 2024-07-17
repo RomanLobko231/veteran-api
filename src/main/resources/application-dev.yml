@@ -30,3 +30,6 @@ cors:
   origins: > 
     http://localhost:3000,
     http://localhost:3001
+
+security:
+  secret: ${SECRET_KEY}
