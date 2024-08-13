@@ -16,18 +16,19 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 
 @Service
-public class TokenService {
+public class JwtTokenService {
 
     @Value("${security.secret}")
     private String SECRET_KEY;
 
+    private final int TOKEN_EXPIRATION_TIME_HOURS = 12;
+
     public String generateToken(Map<String, Object> claims, UserDetails user){
         Date now = new Date(System.currentTimeMillis());
-        Date expirationTime = Date.from(Instant.now().plus(24, ChronoUnit.HOURS));
+        Date expirationTime = Date.from(Instant.now().plus(TOKEN_EXPIRATION_TIME_HOURS, ChronoUnit.HOURS));
         String username = user.getUsername();
 
         return Jwts

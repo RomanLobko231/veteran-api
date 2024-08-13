@@ -1,6 +1,6 @@
 package com.rvs.api.security.config;
 
-import com.rvs.api.security.service.TokenService;
+import com.rvs.api.security.service.JwtTokenService;
 import com.rvs.api.security.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -19,11 +19,11 @@ import java.io.IOException;
 @Component
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
-    private final TokenService tokenService;
+    private final JwtTokenService jwtTokenService;
     private final UserService userService;
 
-    public JWTAuthenticationFilter(TokenService tokenService, UserService userService) {
-        this.tokenService = tokenService;
+    public JWTAuthenticationFilter(JwtTokenService jwtTokenService, UserService userService) {
+        this.jwtTokenService = jwtTokenService;
         this.userService = userService;
     }
 
@@ -40,11 +40,11 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             }
 
             final String token = authHeader.substring(7);
-            final String username = tokenService.extractUsername(token);
+            final String username = jwtTokenService.extractUsername(token);
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null){
                 UserDetails user = userService.loadUserByUsername(username);
-                if (tokenService.isTokenValid(token, user)){
+                if (jwtTokenService.isTokenValid(token, user)){
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                             user,
                             null,

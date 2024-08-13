@@ -2,6 +2,9 @@ package com.rvs.api.model.user;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.annotations.Type;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -11,7 +14,7 @@ import java.util.UUID;
 
 
 @Entity
-@Table(name = "user")
+@Table(name = "app_user")
 public class User implements UserDetails {
 
     @Id
@@ -22,13 +25,14 @@ public class User implements UserDetails {
     @NotBlank
     private String password;
 
-    @Column(name = "username")
+    @Column(name = "username", length = 50)
     @NotBlank
     private String username;
 
-    @Column(name = "role")
+    @Column(name = "role", columnDefinition = "user_role")
     @NotBlank
     @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
     private Role role;
 
     public User(String password, String username, Role role) {

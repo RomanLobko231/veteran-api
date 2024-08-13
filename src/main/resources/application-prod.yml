@@ -19,5 +19,5 @@ spring:
 
 cors:
   origins: >
-    https://romny-veteran-support.netlify.app,
-    https://romny-veteran-support-admin.netlify.app
+    ${USER_ACCESS_POINT},
+    ${ADMIN_ACCESS_POINT}

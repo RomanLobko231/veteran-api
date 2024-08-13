@@ -34,13 +34,11 @@ public class SecurityConfiguration {
     private String[] allowedOrigins;
 
     private final JWTAuthenticationFilter jwtAuthenticationFilter;
-    private final AuthenticationProvider authenticationProvider;
     private final UserDetailsService userDetailsService;
 
 
-    public SecurityConfiguration(JWTAuthenticationFilter jwtAuthenticationFilter, AuthenticationProvider authenticationProvider, UserDetailsService userDetailsService) {
+    public SecurityConfiguration(JWTAuthenticationFilter jwtAuthenticationFilter,  UserDetailsService userDetailsService) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-        this.authenticationProvider = authenticationProvider;
         this.userDetailsService = userDetailsService;
     }
 
@@ -58,7 +56,6 @@ public class SecurityConfiguration {
                                 .requestMatchers(HttpMethod.PATCH, "/news/**", "/documents/**").authenticated()
                                 .anyRequest().authenticated()
                         )
-                .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
