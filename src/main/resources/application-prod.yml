@@ -21,3 +21,7 @@ cors:
   origins: >
     ${USER_ACCESS_POINT},
     ${ADMIN_ACCESS_POINT}
+
+security:
+  secret: ${SECRET_KEY}
+
